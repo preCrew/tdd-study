@@ -1,4 +1,4 @@
-const TodoItem = ({item}: any) => {
+const TodoItem = ({item}: {item: string}) => {
   return (
   <>
     <span>{item}</span>

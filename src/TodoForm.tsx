@@ -1,27 +1,27 @@
 import { useState} from 'react'
 
 interface TtodoForm {
-  onInsert?: any
+  onSubmit: (value: string) => void;
 }
 
-const TodoForm = ({onInsert}: TtodoForm) => {
+const TodoForm = ({onSubmit}: TtodoForm) => {
   const [value,setValue] = useState('')
 
-  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setValue(e.target.value);
   }
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    onInsert(value);
+  const handleOnSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    onSubmit(value);
     setValue('');
     e.preventDefault();
   }
   
   return <>
-    <form  onSubmit={onSubmit}>
+    <form  onSubmit={handleOnSubmit}>
         <input
-          placeholder="할 일을 입력하세요"
           data-testid="TodoFormInput"
-          onChange={onChange}
+          placeholder="할 일을 입력"
+          onChange={handleOnChange}
           value={value}
           />
         <button data-testid="TodoFormButton">등록</button>
