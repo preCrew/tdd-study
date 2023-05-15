@@ -11,9 +11,13 @@ const TodoForm = ({onSubmit}: TtodoForm) => {
     setValue(e.target.value);
   }
   const handleOnSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    onSubmit(value);
-    setValue('');
     e.preventDefault();
+    if (value) {
+      onSubmit(value);
+      setValue('');
+    }else {
+      alert("값을 입력해주세요");
+    }
   }
   
   return <>

@@ -1,14 +1,12 @@
-import './App.css';
 import TodoApp from './TodoApp';
+import { TodoProvider } from './TodoContext';
 
 function App() {
-  const handleClickButton = () => {
-
-  }
-  
   return (
     <>
-      <TodoApp />
+      <TodoProvider>
+        <TodoApp />
+      </TodoProvider>
     </>
   );
 }

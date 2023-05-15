@@ -1,11 +1,20 @@
+import { useContext } from "react";
 import TodoItem from "./TodoItem";
+import { Todo, TodoContext } from "./TodoContext";
+import useTodoContext from "./hooks/useTodoContext";
 
-const TodoList = ({todoItems}:{todoItems: {id: number, item: string}[]}) => {
+interface TodoListProps {
+  todoItems: Todo[];
+}
+const TodoList = ({todoItems}: TodoListProps) => {
     return (
     <ul data-testid="TodoList">
       {
-        todoItems.map(({id, item}) =>(
-          <TodoItem key={id} item={item}/>
+        todoItems.map((item) =>(
+          <TodoItem 
+            key={item.id} 
+            item={item} 
+          />
         ))
       }
     </ul>);

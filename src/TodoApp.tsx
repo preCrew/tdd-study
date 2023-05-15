@@ -1,18 +1,20 @@
-import { useRef, useState } from 'react';
 import TodoForm from './TodoForm';
 import TodoList from './TodoList';
+import useTodoContext from './hooks/useTodoContext';
 
 const TodoApp = () => {
-  const [state, setState] = useState<{id: number, item: string}[]>([]);
-  const nextId = useRef(1);
+  const {Todos, addTodo} = useTodoContext();
 
-  const handleOnSubmit = (todo: string) => {
-    setState(prev => ([...prev, {id: nextId.current++, item: todo}]));
-  } 
+  const handleOnSubmit = (value: string) => {
+    addTodo(value);
+  }
   return (
     <div data-testid="TodoApp">
       <TodoForm onSubmit={handleOnSubmit}/>
-      <TodoList data-testid="TodoList" todoItems={state}/>
+      <TodoList 
+        data-testid="TodoList" 
+        todoItems={Todos}
+      />
     </div>
   );
 };
