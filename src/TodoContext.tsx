@@ -12,7 +12,7 @@ export interface TodoContextState {
 
 const TodoContext = createContext<TodoContextState | null>(null);
 
-const TodoProvider = ({children, init = []}: {children: ReactNode, init?: Todo[]}) => {
+const TodoProvider = ({children, value, init = []}: {children: ReactNode, value?: TodoContextState, init?: Todo[]}) => {
   const [Todos, setState] = useState<Todo[]>(init);
   const nextId = useRef(0);
 
@@ -23,8 +23,9 @@ const TodoProvider = ({children, init = []}: {children: ReactNode, init?: Todo[]
   const deleteTodo = (id: number) => {
     setState(prev => prev.filter(todo => todo.id !== id));
   }
+  
   return (
-    <TodoContext.Provider value={{Todos, addTodo, deleteTodo}}>
+    <TodoContext.Provider value={value ?? {Todos, addTodo, deleteTodo}}>
       {children}
     </TodoContext.Provider>
   );
