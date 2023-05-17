@@ -1,7 +1,5 @@
-import { useContext } from "react";
 import TodoItem from "./TodoItem";
-import { Todo, TodoContext } from "./TodoContext";
-import useTodoContext from "./hooks/useTodoContext";
+import { Todo} from "./TodoContext";
 
 interface TodoListProps {
   todoItems: Todo[];
