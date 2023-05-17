@@ -8,6 +8,7 @@ const TodoForm = ({onInsert}: TtodoForm) => {
   const [value,setValue] = useState('')
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log(e.target.value)
     setValue(e.target.value);
   }
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {

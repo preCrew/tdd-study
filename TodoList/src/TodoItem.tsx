@@ -1,4 +1,4 @@
-const TodoItem = ({item}: any) => {
+const TodoItem = ({item,onDelete}: any) => {
   return (
   <>
     <span>{item}</span>
