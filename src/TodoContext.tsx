@@ -13,7 +13,7 @@ export interface TodoContextState {
 const TodoContext = createContext<TodoContextState | null>(null);
 
 const TodoProvider = ({children, value, init = []}: {children: ReactNode, value?: TodoContextState, init?: Todo[]}) => {
-  const [Todos, setState] = useState<Todo[]>(init);
+  const [Todos, setState] = useState<Todo[]>(init ?? value?.Todos);
   const nextId = useRef(0);
 
   const addTodo = (value: string) => {

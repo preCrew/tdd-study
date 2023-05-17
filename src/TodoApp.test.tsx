@@ -7,11 +7,7 @@ import { mockTodos } from "./hooks/useMockTodoContext";
 describe('<TodoApp/>', () => {
 
   const useSetup = () => {
-    render(
-      <TodoProvider init={mockTodos}>
-        <TodoApp/>
-      </TodoProvider>
-    );
+    render(<TodoProvider init={mockTodos}><TodoApp/></TodoProvider>);
 
     const input = screen.getByTestId("TodoFormInput");
     const submitButton = screen.getByTestId('TodoFormButton')
@@ -21,6 +17,7 @@ describe('<TodoApp/>', () => {
       input, submitButton, todoList
     };
   }
+  
   it('todoProvider와 함께 렌더링 되는지 with sbumitbutton, todoList', () => {
     const {submitButton, todoList} = useSetup();
     expect(submitButton).toBeInTheDocument();
