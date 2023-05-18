@@ -11,19 +11,21 @@ const changedTodoValue = "todo item is changed";
 describe("TodoProvider Test", () => {
   
   const TestComponent = () => {
-    const {Todos, addTodo, deleteTodo, toggleTodo, changeTodo} = useTodoContext();
+    const {Todos, addTodo, deleteTodo, toggleTodo, changeTodo, changeModifyMode} = useTodoContext();
 
     return (
       <>
         <button data-testid="addTodo"
           onClick={() => addTodo(newTodoValue)}
         > add Todo Button </button>
+
         
         {Todos.map(todo => (
           <div data-testid="todoItem" key={todo.id}
             onClick={() => toggleTodo(todo.id)} 
           >
-            {`${todo.id} ${todo.done}`}
+            {`done: ${todo.id} ${todo.done}`}
+            {`modify: ${todo.id} ${todo.modifyMode}`}
             {todo.value}
 
             <div data-testid="deleteTodo"
@@ -33,6 +35,11 @@ describe("TodoProvider Test", () => {
             <div data-testid="changeTodo"
               onClick={() => changeTodo(todo.id, changedTodoValue)}
             > change Todo Button</div>
+
+            
+            <div data-testid="changeModify"
+              onClick={() => changeModifyMode(todo.id)}
+            > change Modify Button</div>
         </div>
         ))}
       </>
@@ -63,10 +70,10 @@ describe("TodoProvider Test", () => {
     expect(beforeTodo).not.toBeInTheDocument();
   });
 
-  it("item의 done: 한번 클릭시 true, 두번 클릭시 false 되는지 확인", async () => {
+  it("toggleTodo: 한번 클릭시 true, 두번 클릭시 false 되는지 확인", async () => {
     setup();
-    const trueReg = new RegExp(`${mockTodos[0].id } true`);
-    const falseReg = new RegExp(`${mockTodos[0].id }`);
+    const trueReg = new RegExp(`done: ${mockTodos[0].id } true`);
+    const falseReg = new RegExp(`done: ${mockTodos[0].id } false`);
 
     const firstItem = screen.getAllByTestId("todoItem")[0];
     await userEvent.click(firstItem);
@@ -88,4 +95,22 @@ describe("TodoProvider Test", () => {
     const changedTodo = screen.getByText(new RegExp(changedTodoValue));
     expect(changedTodo).toBeInTheDocument();
   });
+
+  it("changeModify확인, 첫번째 todo의 modifyMode 제대로 변경되는지확인", async () => {
+    setup();
+    const trueReg = new RegExp(`modify: ${mockTodos[0].id } true`);
+    const falseReg = new RegExp(`modify: ${mockTodos[0].id } false`);
+
+    const firstChangeButton = screen.getAllByTestId("changeModify")[0];
+
+    // 최초에는 modifyMode false
+    let isModifyModeFalse = screen.getByText(falseReg);
+    expect(isModifyModeFalse).toBeInTheDocument();
+
+    await userEvent.click(firstChangeButton);
+
+    // 한번 누르면 modifyMode true
+    let isModifyModeTrue = screen.getByText(trueReg);
+    expect(isModifyModeTrue).toBeInTheDocument();
+  })
 });
