@@ -1,20 +1,20 @@
-import { render, screen } from "@testing-library/react"
+import { screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event";
 import TodoApp from "./TodoApp"
-import { TodoProvider } from "./TodoContext";
-import { mockTodos } from "./hooks/useMockTodoContext";
+import useMockTodoContext, { mockTodos } from "../hooks/useMockTodoContext";
 
 describe('<TodoApp/>', () => {
 
   const useSetup = () => {
-    render(<TodoProvider init={mockTodos}><TodoApp/></TodoProvider>);
+    const {mockAddTodo, mockDeleteTodo} = useMockTodoContext(<TodoApp/>);
 
     const input = screen.getByTestId("TodoFormInput");
     const submitButton = screen.getByTestId('TodoFormButton')
     const todoList = screen.getByTestId('TodoList');
 
     return {
-      input, submitButton, todoList
+      input, submitButton, todoList,
+      mockAddTodo, mockDeleteTodo
     };
   }
   
@@ -24,25 +24,22 @@ describe('<TodoApp/>', () => {
     expect(todoList).toBeInTheDocument();
   });
 
-  it('input 입력 후 todo 추가버튼 눌렀을 때 추가 되는지 테스트', async () => {
-    const { input, submitButton } = useSetup();
+  it('input 입력 후 todo 추가버튼 눌렀을 add함수에 value 잘 넘어가는지', async () => {
+    const { input, submitButton, mockAddTodo } = useSetup();
     const newTodo = "new todo";
   
     await userEvent.type(input, newTodo);
     await userEvent.click(submitButton);
 
-    const newTodoComponent = screen.getByText("new todo")
-    expect(newTodoComponent).toBeInTheDocument();
-  
+    expect(mockAddTodo).toBeCalledWith(newTodo);
   });
 
-  it('삭제버튼 눌렀을때 해당 todo가 screen에서 지워지는지', async () => {
-    useSetup();
+  it('삭제버튼 눌렀을때 delete함수에 id가 잘 넘어가는지', async () => {
+    const {mockDeleteTodo} = useSetup();
     const firstDeleteButton = screen.getAllByTestId("DeleteButton")[0];
 
     await userEvent.click(firstDeleteButton);
 
-    const beforeItem = screen.queryByText(mockTodos[0].value);
-    expect(beforeItem).not.toBeInTheDocument();
+    expect(mockDeleteTodo).toBeCalledWith(mockTodos[0].id);
   });
 });

@@ -1,6 +1,6 @@
 import { screen } from "@testing-library/react"
 import TodoList from "./TodoList"
-import useMockTodoContext, { mockTodos } from "./hooks/useMockTodoContext"
+import useMockTodoContext, { mockTodos } from "../hooks/useMockTodoContext";
 
 describe('<TodoList/>', () => {
 

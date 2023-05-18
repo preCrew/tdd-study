@@ -1,9 +1,8 @@
-import { render, screen } from "@testing-library/react"
+import {  screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import TodoItem from "./TodoItem"
-import { Todo, TodoProvider } from "./TodoContext";
-import useMockTodoContext from "./hooks/useMockTodoContext";
-import React from "react";
+import { Todo } from "../context/TodoContext";
+import useMockTodoContext from "../hooks/useMockTodoContext";
 
 
 describe('<TodoItem/>', () => {

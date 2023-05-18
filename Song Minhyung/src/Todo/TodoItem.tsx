@@ -1,5 +1,6 @@
-import { Todo } from "./TodoContext";
-import useTodoContext from "./hooks/useTodoContext";
+import { Todo } from "../context/TodoContext";
+import useTodoContext from "../hooks/useTodoContext";
+
 
 interface TodoItemProps {
   item: Todo,

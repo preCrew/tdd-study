@@ -1,5 +1,5 @@
+import { Todo } from "../context/TodoContext";
 import TodoItem from "./TodoItem";
-import { Todo} from "./TodoContext";
 
 interface TodoListProps {
   todoItems: Todo[];

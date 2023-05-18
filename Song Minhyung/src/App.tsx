@@ -1,5 +1,5 @@
-import TodoApp from './TodoApp';
-import { TodoProvider } from './TodoContext';
+import TodoApp from './Todo/TodoApp';
+import { TodoProvider } from './context/TodoContext';
 
 function App() {
   return (

@@ -1,6 +1,6 @@
+import useTodoContext from '../hooks/useTodoContext';
 import TodoForm from './TodoForm';
 import TodoList from './TodoList';
-import useTodoContext from './hooks/useTodoContext';
 
 const TodoApp = () => {
   const {Todos, addTodo} = useTodoContext();
