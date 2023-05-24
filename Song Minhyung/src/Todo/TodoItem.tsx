@@ -1,14 +1,18 @@
 import { ChangeEvent, useState } from "react";
-import { Todo } from "../context/TodoContext";
-import useTodoContext from "../hooks/useTodoContext";
+import { Todo } from "../recoil/TodoAtomState";
 import "./todoItem.css";
 
 interface TodoItemProps {
   item: Todo,
+  deleteTodo: (id: number) => void;
+  changeTodo: (id: number, value :string) => void;
+  toggleTodo: (id: number) => void;
+  changeModifyMode: (id: number) => void;
 }
 
-const TodoItem = ({item}: TodoItemProps) => {
-  const {deleteTodo, changeTodo, changeModifyMode, toggleTodo} = useTodoContext();
+const TodoItem = ({
+  item, deleteTodo, changeTodo, toggleTodo, changeModifyMode
+}: TodoItemProps) => {
   const [inputVal, setInputVal] = useState('');
   
   const handleClickDeleteButton = () => {
@@ -27,6 +31,7 @@ const TodoItem = ({item}: TodoItemProps) => {
       
     }else {
       changeModifyMode(item.id);
+      setInputVal(item.value);
     }
   }
 
@@ -40,7 +45,6 @@ const TodoItem = ({item}: TodoItemProps) => {
 
   return (
   <li>
-
     {item.modifyMode 
       ? <input data-testid="ModifyInput" 
           onChange={handleChangeInput} 

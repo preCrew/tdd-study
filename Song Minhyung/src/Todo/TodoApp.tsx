@@ -1,9 +1,9 @@
-import useTodoContext from '../hooks/useTodoContext';
+import useTodoState from '../hooks/useTodoState';
 import TodoForm from './TodoForm';
 import TodoList from './TodoList';
 
 const TodoApp = () => {
-  const {Todos, addTodo} = useTodoContext();
+  const {addTodo} = useTodoState();
 
   const handleOnSubmit = (value: string) => {
     addTodo(value);
@@ -13,7 +13,6 @@ const TodoApp = () => {
       <TodoForm onSubmit={handleOnSubmit}/>
       <TodoList 
         data-testid="TodoList" 
-        todoItems={Todos}
       />
     </div>
   );

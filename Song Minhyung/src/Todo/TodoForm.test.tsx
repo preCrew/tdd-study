@@ -29,7 +29,7 @@ describe('<TodoForm/>', () => {
     expect(input.value).toBe(inputVal);
   });
 
-  it('onInsert 함수가 불러지면 input값은 비워짐', async () => {
+  it('onInsert 함수가 불러지면 id와 함께 호출되고, input값은 비워짐', async () => {
     const {input, button, onSubmit} = setup();
     const inputVal = 'test input Val';
     

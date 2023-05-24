@@ -1,7 +1,8 @@
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import App from './App';
+import renderWithRecoil from './recoil/renderWithRecoil';
 
 test('ui 최초 렌더링 확인', () => {
-  render(<App />);
+  renderWithRecoil(<App/>);
   screen.getByTestId('TodoApp')
 });
