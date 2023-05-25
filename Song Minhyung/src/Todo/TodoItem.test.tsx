@@ -1,137 +1,106 @@
-import { render, screen } from "@testing-library/react"
+import { screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 
-import TodoItem from "./TodoItem"
-import { RecoilRoot } from "recoil";
-import TodoAtomState, { Todo } from "../recoil/TodoAtomState";
+import renderWithRecoil from "../recoil/renderWithRecoil";
+import { mockTodo } from "../mocks/todo";
+import TodoItem, { TodoItemProps } from "./TodoItem";
 
-interface MockItem {
-  done?: boolean;
-  modifyMode?: boolean
-}
-const mockItem = ({done, modifyMode}: MockItem):Todo => ({
-  id: 1, value: 'TestTodo1', done: done ?? false, modifyMode: modifyMode ?? false,
-});
+const deleteTodo = jest.fn();
+const toggleTodo = jest.fn();
+const changeTodo = jest.fn();
+const changeModifyMode = jest.fn();
 
-const setup = (item: Todo, ) => {
-  const mockDeleteTodo = jest.fn();
-  const mockToggleTodo = jest.fn();
-  const mockChangeTodo = jest.fn();
-  const mockChangeModifyMode = jest.fn();
+const props: TodoItemProps = {
+  item: mockTodo,
+  deleteTodo,
+  toggleTodo,
+  changeTodo,
+  changeModifyMode,
+};
 
-  const wrapper = (({children}: {children: React.ReactNode}) => 
-    <RecoilRoot initializeState={({set}) => {
-      set(TodoAtomState, [{id: 0, done: false, modifyMode: false, value: "todoItem"}]);
-    }}>
-      {children}
-    </RecoilRoot>
-  );
-
-  render(<TodoItem 
-    item={item}
-    deleteTodo={mockDeleteTodo}
-    changeTodo={mockChangeTodo}
-    toggleTodo={mockToggleTodo}
-    changeModifyMode={mockChangeModifyMode}
-  />, {wrapper});
+const setup = () => {
+  const {options}= renderWithRecoil(<TodoItem {...props}/>);
 
   const deleteButton = screen.getByTestId("DeleteButton") as HTMLButtonElement
   const modifyButton = screen.getByTestId("ModifyButton") as HTMLButtonElement;
   const modifyInput = screen.queryByTestId("ModifyInput") as HTMLInputElement;
-  const itemSpan = screen.queryByText(item.value) as HTMLSpanElement;
-  
+  const itemSpan = screen.queryByText(mockTodo.value) as HTMLSpanElement;
 
   return { 
-    mockDeleteTodo, mockToggleTodo, mockChangeTodo, mockChangeModifyMode,
-    itemSpan, deleteButton, modifyButton, modifyInput
+    ...options, props, itemSpan, deleteButton, modifyButton, modifyInput
   };
 }
-describe('<TodoItem/> modifyMode false일때', () => {
-  const item = mockItem({modifyMode: false});
+const clickModifyButton = async() => {
+  const setups = setup();
 
-  it('렌더링', () => {
-    let {modifyButton, itemSpan, modifyInput} = setup(item);
+  await userEvent.click(setups.modifyButton);
+  expect(setups.props.changeModifyMode).toBeCalledWith(mockTodo.id);
 
+  setups.rerender(<TodoItem {...props} item={{...mockTodo, modifyMode: true}}/>);
+
+  const modifyInput = screen.queryByTestId("ModifyInput") as HTMLInputElement;
+
+  return {...setups, modifyInput};
+}
+
+describe('<TodoItem>', () => {
+  it('최초 렌더링시 item.value값을 가진 span과 수정버튼이 존재함', () => {
+    const {itemSpan, modifyButton} = setup();
+
+    expect(itemSpan.innerHTML).toBe(mockTodo.value);
     expect(modifyButton.innerHTML).toBe("수정");
-    expect(modifyInput).not.toBeInTheDocument();
-    expect(itemSpan).toBeInTheDocument();
   });
 
-  it('수정 버튼클릭하면 수정버튼 changeModifyMode 호출됨', async () => {
-    const item = mockItem({modifyMode: false});
-    const {modifyButton, mockChangeModifyMode} = setup(item);
-
-    await userEvent.click(modifyButton);
-    expect(mockChangeModifyMode).toBeCalledWith(item.id);
-  });
-});
-
-describe('<TodoItem/> modifyMode true일때', () => {
-  const item = mockItem({modifyMode: true});
-  const changedValue = "changed Value";
-
-  it('렌더링', () => {
-    let {modifyButton, itemSpan, modifyInput} = setup(item);
-
+  it('수정버튼 클릭시 item.value값을 가진 input과 완료버튼이 존재함', async () => {
+    const {modifyButton, modifyInput} = await clickModifyButton();
+    
     expect(modifyButton.innerHTML).toBe("완료");
-    expect(modifyInput).toBeInTheDocument();
-    expect(itemSpan).not.toBeInTheDocument();
+    expect(modifyInput.value).toBe(mockTodo.value);
   });
 
-  it('input 입력후 "완료" 버튼을 클릭하면', async () =>{
-    let {modifyButton, modifyInput, mockChangeModifyMode, mockChangeTodo} = setup(item);
-    
-    await userEvent.type(modifyInput, changedValue);
-    expect(modifyInput.value).toBe(changedValue);
+  it('완료버튼 클릭시 값이 있다면 changeTodo 함수를 호출함', async () => {
+    const {modifyButton, modifyInput} = await clickModifyButton();
 
+    await userEvent.clear(modifyInput);
+    await userEvent.type(modifyInput, "new Todo");
     await userEvent.click(modifyButton);
-    expect(mockChangeModifyMode).toBeCalledWith(item.id);
-    expect(mockChangeTodo).toBeCalledWith(item.id, changedValue);
+
+    expect(changeTodo).toBeCalledWith(mockTodo.id, "new Todo");
   });
 
-  it('input 값이 비어있을 때 "완료" 버튼을 클릭하면 alert 출력', async () => {
-    let {modifyButton, mockChangeModifyMode, mockChangeTodo} = setup(item);
-
+  it('완료버튼 클릭시 값이 없다면 alert(입력값이 없습니다.) 를 출력함', async () => {
+    const {modifyInput, modifyButton} = await clickModifyButton();
     window.alert = jest.fn();
-    
+
+    await userEvent.clear(modifyInput);
     await userEvent.click(modifyButton);
-    expect(mockChangeModifyMode).not.toBeCalled();
-    expect(mockChangeTodo).not.toBeCalled();
+
     expect(window.alert).toBeCalledWith("입력값이 없습니다.");
   });
 
-});
+  it('삭제버튼 클릭시 deleteTodo(id)가 호출됨', async ()=>{
+    const {props: {deleteTodo}, deleteButton} = setup();
 
-describe('<TodoItem/> isDone true or false', () => {
+    await userEvent.click(deleteButton);
 
-  it('item 의 isDone 이 false일때, 클릭하면', async () => {
-    const item = mockItem({done: false});
-    const {itemSpan, mockToggleTodo} = setup(item);
-
-    expect(itemSpan).not.toHaveClass("line-through");
-    
-    await userEvent.click(itemSpan);
-
-    expect(mockToggleTodo).toBeCalledWith(item.id);
+    expect(deleteTodo).toBeCalledWith(mockTodo.id);
   });
 
-  it('item 의 isDone 이 true일때, 클릭하면', async () => {
-    const item = mockItem({done: true});
-    const {itemSpan, mockToggleTodo} = setup(item);
+  it('span 클릭시 가운데 줄이 생기고toggleTodo(id)가 호출됨, 다시한번 클릭시 줄이 없어짐', async ()=>{
+    const {props, itemSpan, rerender} = setup();
 
+    await userEvent.click(itemSpan);
+    rerender(<TodoItem {...props} item={{...mockTodo, done: true}}/>);
+
+    expect(toggleTodo).toBeCalledWith(mockTodo.id);
     expect(itemSpan).toHaveClass("line-through");
-    
+
+
     await userEvent.click(itemSpan);
+    rerender(<TodoItem {...props} item={{...mockTodo, done: false}}/>);
 
-    expect(mockToggleTodo).toBeCalledWith(item.id);
+    expect(toggleTodo).toBeCalledWith(mockTodo.id);
+    expect(itemSpan).not.toHaveClass("line-through");
   });
-});
-
-test('삭제버튼 눌렸을 때 id 잘 넘어가는지 확인', async () => {
-  const item = mockItem({done: false});
-  const {mockDeleteTodo, deleteButton} = setup(item);
-
-  await userEvent.click(deleteButton);
-
-  expect(mockDeleteTodo).toBeCalledWith(item.id);
+  
 });

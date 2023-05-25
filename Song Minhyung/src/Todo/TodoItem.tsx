@@ -2,7 +2,7 @@ import { ChangeEvent, useState } from "react";
 import { Todo } from "../recoil/TodoAtomState";
 import "./todoItem.css";
 
-interface TodoItemProps {
+export interface TodoItemProps {
   item: Todo,
   deleteTodo: (id: number) => void;
   changeTodo: (id: number, value :string) => void;
