@@ -1,5 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import TodoForm from "./TodoForm"
+import React from "react";
 
 const inputs = [
   'TDD배우기1', '테스트 입력', 'inputs'

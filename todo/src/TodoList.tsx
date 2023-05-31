@@ -1,15 +1,14 @@
-import { useState } from "react";
+import React,{ useState } from "react";
 import TodoItem from "./TodoItem";
+import useTodo from "./recoil/hook/todoAtom";
 
 const TodoList = ({
-  todoItems,
   onDelete,
   onEdit,
   editMode,
   onCompletedEdit,
   selectdTodo}: 
   {
-  todoItems: {id: number, item: string}[],
   onDelete: (id: number) => void,
   onEdit: (id: number) => void,
   editMode: boolean,
@@ -18,6 +17,7 @@ const TodoList = ({
 }) => {
 
   const [value,setState] = useState('')
+  const {todo,setTodo} = useTodo()
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setState(e.target.value)
@@ -27,7 +27,7 @@ const TodoList = ({
     return (
     <ul data-testid="TodoList">
       {
-        todoItems.map(({id, item}) =>(
+        todo.map(({id, item}) =>(
           <li key={id}>
             <TodoItem item={item}/>
             <button onClick={() => onDelete(id)}>삭제</button>

@@ -1,7 +1,7 @@
 import React from 'react'
 import { RecoilRoot, useRecoilState } from 'recoil';
 import './App.css';
-import TodoApp from '../../todo/src/TodoApp';
+import TodoApp from './TodoApp';
 
 function App() {
   const handleClickButton = () => {
@@ -9,7 +9,8 @@ function App() {
   }
 
   return (
-    <TodoApp />
+    
+    <TodoApp data-testid="TodoApp"/>
   );
 }
 
