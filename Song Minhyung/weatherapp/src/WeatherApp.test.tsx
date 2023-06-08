@@ -1,9 +1,9 @@
-import { render, screen, waitFor } from '@testing-library/react';
-import App from './App';
+import { render, screen } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from 'react-query';
+import App from './App';
 
 describe('APP', () => {
-  it('날씨 정보 가져오는지', async () => {
+  it('최초에 fallback으로 loading 그려주고 그 후 날씨 정보 가져오는지', async () => {
     const queryClient = new QueryClient();
     const wrapper = ({ children }: { children: React.ReactNode }) => (
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
